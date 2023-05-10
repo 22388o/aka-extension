@@ -7,6 +7,8 @@ import AppBar from "../components/Appbar";
 import Storage from "../../common/Storage";
 import { KeyPair } from "../../common/model/KeyPair";
 
+import Relays2 from "../components/Relays2";
+
 const Options = () => {
   const [public_key, setPublicKey] = useState("");
   const onKeyChange = onKeyChangeHandler.bind(this);
@@ -43,6 +45,12 @@ const Options = () => {
       )}
       {notEmpty && (
         <div className="z-10 relative flex flex-col space-y-4 p-4 bg-gray-100">
+          <Panel>
+            <h1 className="font-semibold text-lg text-aka-blue pt-1">
+              Relays2
+            </h1>
+            <Relays2 currentPublicKey={public_key} />
+          </Panel>
           <Panel>
             <h1 className="font-semibold text-lg text-aka-blue pt-1">
               App Permissions

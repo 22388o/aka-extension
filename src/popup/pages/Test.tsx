@@ -1,11 +1,22 @@
 import React from "react";
 import { useLoaderData, Form, redirect } from "react-router-dom";
 import browser from "webextension-polyfill";
+import { useAppSelector, useAppDispatch } from "../hooks";
+import { add, remove } from "../../common/model/relaySlice";
 
 export function Test() {
   const name: any = useLoaderData();
   console.log("Test Render: " + JSON.stringify(name));
   // document.documentElement.classList.add("dark");
+
+  // The `state` arg is correctly typed as `RootState` already
+  const relays = useAppSelector((state) => state.relays.relays);
+  const dispatch = useAppDispatch();
+
+  const addRelayClick = () => {
+    const newRelay = { url: "new.test", read: true, write: false };
+    dispatch(add(newRelay));
+  };
 
   return (
     <>
@@ -38,6 +49,12 @@ export function Test() {
               Submit
             </button>
           </Form>
+          <div>
+            {relays.map((relay, i) => (
+              <div key={relay.url}>{relay.url}</div>
+            ))}
+          </div>
+          <button onClick={addRelayClick}>Add Relay</button>
         </div>
       </div>
     </>

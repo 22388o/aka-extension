@@ -13,6 +13,7 @@ import Storage from "../../common/Storage";
 import { KeyPair } from "../../common/model/KeyPair";
 
 export default function Root() {
+  console.log("I am ROOOOOOOOT!" + Math.random());
   // load data so can be accessed by other components
   const keypairs = useLoaderData() as KeyPair[];
   return (

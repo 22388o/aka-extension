@@ -29,6 +29,7 @@ class Storage {
 
   private async load() {
     if (!this.loadPromise) {
+      console.log("I am storage " + Math.random());
       this.loadPromise = this.loadKeyPairs();
     }
 

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Alert from "../../common/components/Alert";
-import Storage from "../../common/Storage";
-import { Relay } from "../../common/model/Relay";
+import { useAppSelector, useAppDispatch } from "../hooks";
+import { IRelay, add, remove } from "../../common/model/relaySlice";
 
-function Relays({ currentPublicKey }) {
-  const [relays, setRelays] = useState<Relay[]>([]);
+function Relays2({ currentPublicKey }) {
   const [alert, setAlert] = useState(false);
   const [message, setMessage] = useState("");
-  const storage = Storage.getInstance();
+
+  // The `state` arg is correctly typed as `RootState` already
+  const relays = useAppSelector((state) => state.relays.relays);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -16,19 +18,14 @@ function Relays({ currentPublicKey }) {
     return () => clearTimeout(timer);
   });
 
-  useEffect(() => {
-    readRelays(currentPublicKey).then((relays) => setRelays(relays));
-    console.log(`Relays for ${currentPublicKey}: ${JSON.stringify(relays)}`);
-  }, [currentPublicKey]);
-
   return (
     <>
       <div key={currentPublicKey} className="flex flex-col space-y-1">
-        {relays.map(({ url, read, write }, i) => (
+        {relays.map((relay, i) => (
           <div key={i} className="flex flex-row content-center space-x-1">
             <input
               style={{ marginRight: "10px", width: "400px" }}
-              value={url}
+              value={relay.url}
               className="h-6 bg-gray-100 dark:bg-slate-900 text-slate-900 dark:text-white px-2 placeholder:italic placeholder:text-slate-400 border border-slate-300"
               onChange={changeRelayURL.bind(null, i)}
               onBlur={deleteRelay.bind(null, i)}
@@ -39,7 +36,7 @@ function Relays({ currentPublicKey }) {
             <input
               id={`read${i}`}
               type="checkbox"
-              checked={read}
+              checked={relay.read}
               className="accent-aka-blue"
               onChange={toggleRelayPolicy.bind(null, i, "read")}
             />
@@ -50,7 +47,7 @@ function Relays({ currentPublicKey }) {
             <input
               id={`write${i}`}
               type="checkbox"
-              checked={write}
+              checked={relay.write}
               className="accent-aka-blue"
               onChange={toggleRelayPolicy.bind(null, i, "write")}
             />
@@ -82,45 +79,46 @@ function Relays({ currentPublicKey }) {
   );
 
   function changeRelayURL(i, ev) {
-    let relay: Relay = relays[i];
-    setRelays([
-      ...relays.slice(0, i),
-      new Relay(ev.target.value, relay.read, relay.write),
-      ...relays.slice(i + 1),
-    ]);
+    let relay: IRelay = relays[i];
+    // setRelays([
+    //   ...relays.slice(0, i),
+    //   new Relay(ev.target.value, relay.read, relay.write),
+    //   ...relays.slice(i + 1),
+    // ]);
   }
 
   function deleteRelay(i, ev) {
     if (relays[i].url == "") {
       const newArr = [...relays.slice(0, i), ...relays.slice(i + 1)];
-      setRelays(newArr);
+      // setRelays(newArr);
     }
   }
 
   function toggleRelayPolicy(i, cat) {
-    let relay: Relay = relays[i];
+    let relay: IRelay = relays[i];
     if (cat === "read") relay.read = !relay.read;
     if (cat === "write") relay.write = !relay.write;
 
-    setRelays([...relays.slice(0, i), relay, ...relays.slice(i + 1)]);
+    // setRelays([...relays.slice(0, i), relay, ...relays.slice(i + 1)]);
   }
 
-  async function readRelays(currentPublicKey: string): Promise<Relay[]> {
-    return storage.readRelays(currentPublicKey);
+  async function readRelays(currentPublicKey: string): Promise<IRelay[]> {
+    // return storage.readRelays(currentPublicKey);
+    return relays;
   }
 
   function addNewRelay() {
-    const newArr: Relay[] = [...relays];
+    const newArr: IRelay[] = [...relays];
 
-    newArr.push(new Relay("", true, true));
-    setRelays(newArr);
+    newArr.push({ url: "new.relay", read: true, write: true });
+    // setRelays(newArr);
   }
 
   async function saveRelays(currentPublicKey: string) {
-    storage.saveRelays(currentPublicKey, relays);
+    // storage.saveRelays(currentPublicKey, relays);
     setAlert(true);
     setMessage("saved");
   }
 }
 
-export default Relays;
+export default Relays2;
